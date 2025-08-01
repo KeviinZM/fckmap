@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Users, UserPlus, Copy, Check, UserMinus, ChevronDown, ChevronUp, MapPin } from 'lucide-react'
+import { Users, UserPlus, Copy, Check, UserMinus, ChevronDown, ChevronUp, MapPin, X } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { getColorForFriend } from '@/lib/friend-colors'
@@ -252,7 +252,7 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
   if (!user) return null
 
   return (
-    <div className="w-48">
+    <div className="w-64">
       {/* En-tête cliquable */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -354,42 +354,44 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
             ) : (
               <div className="space-y-1">
                 {friends.map((friend) => (
-                  <div key={friend.id} className="flex items-center justify-between p-1 bg-gray-50 rounded text-xs">
-                    {/* Indicateur de couleur */}
-                    <div 
-                      className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0 mr-2"
-                      style={{ backgroundColor: friend.color }}
-                      title={`Couleur: ${friend.color_name}`}
-                    />
+                  <div key={friend.id} className="p-2 bg-gray-50 rounded text-xs">
+                    <div className="flex items-center mb-1">
+                      {/* Indicateur de couleur */}
+                      <div 
+                        className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0 mr-2"
+                        style={{ backgroundColor: friend.color }}
+                        title={`Couleur: ${friend.color_name}`}
+                      />
+                      
+                      {/* Pseudo complet sans troncature */}
+                      <div className="font-medium text-xs text-gray-900 flex-1">{friend.pseudo}</div>
+                      
+                      {/* Bouton de suppression */}
+                      <button
+                        onClick={() => removeFriend(friend.id)}
+                        className="ml-2 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                        title="Supprimer cet ami"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                     
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="font-medium text-xs text-gray-900 truncate">{friend.pseudo}</div>
-                        <div className="text-xs text-gray-400 ml-2 flex-shrink-0 flex items-center space-x-1">
-                          <div className="flex items-center">
-                            <MapPin className="w-3 h-3 text-fck-orange mr-1" />
-                            <span>{friend.nb_villes}</span>
-                          </div>
-                          <span>•</span>
-                          <div className="flex items-center">
-                            <span>⭐ {friend.note_moyenne > 0 ? (friend.note_moyenne % 1 === 0 ? friend.note_moyenne.toString() : friend.note_moyenne.toFixed(1)) : '-'}</span>
-                          </div>
-                        </div>
-                      </div>
+                    {/* Deuxième ligne: Stats + couleur */}
+                    <div className="flex items-center justify-between">
                       <div className="text-xs text-gray-500 flex items-center">
                         <span>{friend.code_ami}</span>
                         <span className="ml-2 text-gray-400">• {friend.color_name}</span>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-1 ml-2">
-
-                      <button
-                        onClick={() => removeFriend(friend.friend_id)}
-                        className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
-                        title="Supprimer ami"
-                      >
-                        <UserMinus className="w-3 h-3" />
-                      </button>
+                      
+                      <div className="text-xs text-gray-400 flex items-center space-x-2">
+                        <div className="flex items-center">
+                          <MapPin className="w-3 h-3 text-fck-orange mr-1" />
+                          <span>{friend.nb_villes}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span>⭐ {friend.note_moyenne > 0 ? (friend.note_moyenne % 1 === 0 ? friend.note_moyenne.toString() : friend.note_moyenne.toFixed(1)) : '-'}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}

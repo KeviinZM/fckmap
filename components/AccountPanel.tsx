@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useAuth } from './AuthProvider'
 import { supabase } from '@/lib/supabase'
-import { User, Lock, Mail, UserPlus, X, Check, AlertCircle } from 'lucide-react'
+import { User, Lock, Mail, UserPlus, X, Check, AlertCircle, Edit3 } from 'lucide-react'
+import { validatePseudo, generatePseudoSuggestions } from '@/lib/pseudo-validation'
 
 interface AccountPanelProps {
   isOpen: boolean
@@ -11,15 +12,99 @@ interface AccountPanelProps {
 }
 
 export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
-  const { user } = useAuth()
+  const { user, updatePseudo } = useAuth()
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
+  
+  // États pour le changement de pseudo
+  const [newPseudo, setNewPseudo] = useState('')
+  const [isEditingPseudo, setIsEditingPseudo] = useState(false)
+  const [pseudoLoading, setPseudoLoading] = useState(false)
+  const [pseudoMessage, setPseudoMessage] = useState('')
+  const [pseudoMessageType, setPseudoMessageType] = useState<'success' | 'error'>('success')
+  const [pseudoSuggestions, setPseudoSuggestions] = useState<string[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const pseudo = user?.user_metadata?.pseudo || user?.email?.split('@')[0] || 'Utilisateur'
+
+  // Fonctions pour le changement de pseudo
+  const handleStartEditPseudo = () => {
+    setNewPseudo(pseudo)
+    setIsEditingPseudo(true)
+    setPseudoMessage('')
+    
+    // Générer des suggestions si nécessaire
+    if (user?.email) {
+      const suggestions = generatePseudoSuggestions(user.email)
+      setPseudoSuggestions(suggestions)
+    }
+  }
+
+  const handleCancelEditPseudo = () => {
+    setIsEditingPseudo(false)
+    setNewPseudo('')
+    setPseudoMessage('')
+    setShowSuggestions(false)
+  }
+
+  const handlePseudoChange = (value: string) => {
+    setNewPseudo(value)
+    setPseudoMessage('')
+    
+    // Validation en temps réel
+    if (value.trim() && value.trim() !== pseudo) {
+      const validation = validatePseudo(value)
+      if (!validation.isValid) {
+        setPseudoMessage(validation.error || 'Pseudo invalide')
+        setPseudoMessageType('error')
+      }
+    }
+  }
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setNewPseudo(suggestion)
+    setShowSuggestions(false)
+    setPseudoMessage('')
+  }
+
+  const handlePseudoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!newPseudo.trim()) return
+    
+    // Vérifier si le pseudo a changé
+    if (newPseudo.trim() === pseudo) {
+      setPseudoMessage('Vous devez choisir un pseudo différent')
+      setPseudoMessageType('error')
+      return
+    }
+
+    setPseudoLoading(true)
+    setPseudoMessage('')
+
+    try {
+      await updatePseudo(newPseudo)
+      
+      setPseudoMessage('Pseudo modifié avec succès !')
+      setPseudoMessageType('success')
+      
+      // Attendre un peu puis fermer le mode édition
+      setTimeout(() => {
+        setIsEditingPseudo(false)
+        setPseudoMessage('')
+      }, 2000)
+      
+    } catch (error: any) {
+      setPseudoMessage(error.message || 'Erreur lors de la modification du pseudo')
+      setPseudoMessageType('error')
+    } finally {
+      setPseudoLoading(false)
+    }
+  }
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -108,12 +193,94 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations</h3>
           <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <UserPlus className="w-5 h-5 text-gray-400" />
-              <div>
-                <p className="text-sm text-gray-500">Pseudo</p>
-                <p className="font-medium text-gray-900">{pseudo}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <UserPlus className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-sm text-gray-500">Pseudo</p>
+                  {!isEditingPseudo ? (
+                    <p className="font-medium text-gray-900">{pseudo}</p>
+                  ) : (
+                    <form onSubmit={handlePseudoSubmit} className="mt-1">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={newPseudo}
+                          onChange={(e) => handlePseudoChange(e.target.value)}
+                          className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                          placeholder="Nouveau pseudo"
+                          maxLength={20}
+                          disabled={pseudoLoading}
+                          autoFocus
+                        />
+                        <button
+                          type="submit"
+                          disabled={pseudoLoading || !newPseudo.trim() || newPseudo.trim() === pseudo}
+                          className="text-xs bg-fck-orange text-white px-2 py-1 rounded hover:bg-fck-orange-dark transition-colors disabled:opacity-50"
+                        >
+                          {pseudoLoading ? '...' : '✓'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelEditPseudo}
+                          disabled={pseudoLoading}
+                          className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      
+                      {/* Suggestions de pseudo */}
+                      {pseudoSuggestions.length > 0 && (
+                        <div className="mt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowSuggestions(!showSuggestions)}
+                            className="text-xs text-gray-500 hover:text-gray-700"
+                          >
+                            {showSuggestions ? 'Masquer' : 'Voir'} les suggestions
+                          </button>
+                          {showSuggestions && (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {pseudoSuggestions.map((suggestion, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  onClick={() => handleSuggestionClick(suggestion)}
+                                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+                                >
+                                  {suggestion}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Message de validation */}
+                      {pseudoMessage && (
+                        <div className={`mt-2 text-xs ${
+                          pseudoMessageType === 'success' 
+                            ? 'text-green-600' 
+                            : 'text-red-600'
+                        }`}>
+                          {pseudoMessage}
+                        </div>
+                      )}
+                    </form>
+                  )}
+                </div>
               </div>
+              
+              {!isEditingPseudo && (
+                <button
+                  onClick={handleStartEditPseudo}
+                  className="text-gray-400 hover:text-fck-orange transition-colors"
+                  title="Modifier le pseudo"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+              )}
             </div>
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-gray-400" />

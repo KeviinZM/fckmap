@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { validatePseudo } from '@/lib/pseudo-validation'
 
 interface AuthContextType {
   user: User | null
@@ -11,6 +12,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, pseudo: string) => Promise<{ emailSent: boolean; user: User | null }>
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<void>
+  updatePseudo: (newPseudo: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -140,6 +142,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
   }
 
+  const updatePseudo = async (newPseudo: string) => {
+    if (!user) {
+      throw new Error('Aucun utilisateur connecté')
+    }
+
+    // Validation du nouveau pseudo
+    const validation = validatePseudo(newPseudo)
+    if (!validation.isValid) {
+      throw new Error(validation.error || 'Pseudo invalide')
+    }
+
+    const cleanPseudo = newPseudo.trim()
+
+    try {
+      console.log('Mise à jour du pseudo:', cleanPseudo)
+      
+      // Mettre à jour les metadata utilisateur
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          ...user.user_metadata,
+          pseudo: cleanPseudo
+        }
+      })
+
+      if (error) {
+        console.error('Erreur mise à jour pseudo:', error)
+        throw new Error(`Erreur lors de la mise à jour: ${error.message}`)
+      }
+
+      console.log('✅ Pseudo mis à jour avec succès:', cleanPseudo)
+      
+      // Note: L'état utilisateur sera automatiquement mis à jour via onAuthStateChange
+      // Pas besoin de setUser manuellement ici
+      
+    } catch (err: any) {
+      console.error('Erreur complète updatePseudo:', err)
+      throw err
+    }
+  }
+
   const signInWithGoogle = async () => {
     try {
       console.log('Connexion avec Google...')
@@ -169,7 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle, updatePseudo }}>
       {children}
     </AuthContext.Provider>
   )
