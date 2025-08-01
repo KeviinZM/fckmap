@@ -31,6 +31,8 @@ export default function Home() {
     if (user) {
       fetchVillesMarquees()
       fetchVillesAmis()
+      // Lancer le diagnostic pour identifier les problèmes
+      diagnosticVillesAmis()
     }
   }, [user])
 
@@ -110,9 +112,29 @@ export default function Home() {
           continue
         }
 
-        // 5. Ajouter chaque ville de cet ami à la liste
+        // 5. Ajouter chaque ville de cet ami à la liste (avec validations strictes)
         if (friendCities && friendCities.length > 0) {
           for (const city of friendCities) {
+            // Validation stricte des données requises
+            if (
+              !city.id || 
+              !city.nom_ville || 
+              !city.latitude || 
+              !city.longitude || 
+              isNaN(city.latitude) || 
+              isNaN(city.longitude) ||
+              !city.note ||
+              !friendInfo.pseudo && !friendInfo.email
+            ) {
+              console.warn('Ville d\'ami invalide ignorée:', {
+                cityId: city.id,
+                cityName: city.nom_ville,
+                friendPseudo: friendInfo.pseudo,
+                coords: [city.latitude, city.longitude]
+              })
+              continue // Ignorer cette ville si les données sont incomplètes
+            }
+
             villesAmisFormatted.push({
               id: city.id,
               nom_ville: city.nom_ville,
@@ -129,10 +151,50 @@ export default function Home() {
       }
 
 
+      console.log(`✅ ${villesAmisFormatted.length} villes d'amis valides chargées`)
       setVillesAmis(villesAmisFormatted)
     } catch (error) {
       console.error('Erreur villes amis:', error)
       setVillesAmis([])
+    }
+  }
+
+  // Fonction de diagnostic pour nettoyer les données d'amis corrompues
+  const diagnosticVillesAmis = async () => {
+    if (!user) return
+
+    try {
+      console.log('🔍 Diagnostic des villes d\'amis...')
+      
+      // Récupérer toutes les villes d'amis directement
+      const { data: allFriendCities, error } = await supabase
+        .from('marques_villes')
+        .select('*')
+        .neq('auth_user_id', user.id) // Toutes les villes qui ne sont pas à moi
+
+      if (error) {
+        console.error('Erreur diagnostic:', error)
+        return
+      }
+
+      const problemCities = allFriendCities?.filter(city => 
+        !city.nom_ville || 
+        !city.latitude || 
+        !city.longitude || 
+        isNaN(city.latitude) || 
+        isNaN(city.longitude) ||
+        !city.note
+      ) || []
+
+      if (problemCities.length > 0) {
+        console.warn('⚠️ Villes problématiques détectées:', problemCities)
+        console.log('Ces villes ne s\'afficheront plus sur la carte grâce aux nouvelles validations.')
+      } else {
+        console.log('✅ Aucune ville problématique détectée')
+      }
+
+    } catch (error) {
+      console.error('Erreur diagnostic:', error)
     }
   }
 
@@ -215,7 +277,16 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            {user && (
+              <button
+                onClick={diagnosticVillesAmis}
+                className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors shadow-lg"
+                title="Diagnostiquer les villes d'amis (debug)"
+              >
+                🔍 Debug
+              </button>
+            )}
             {user ? (
               <UserMenu />
             ) : (

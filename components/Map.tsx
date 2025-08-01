@@ -166,9 +166,24 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
 
         {/* Afficher les villes des amis */}
         {villesAmis.map((ville) => {
-          // Vérifier que les coordonnées sont valides
-          if (!ville.latitude || !ville.longitude || isNaN(ville.latitude) || isNaN(ville.longitude)) {
-            console.error('Coordonnées invalides ville ami:', ville.nom_ville)
+          // Validation complète des données de ville d'ami
+          if (
+            !ville.id ||
+            !ville.nom_ville ||
+            !ville.latitude || 
+            !ville.longitude || 
+            isNaN(ville.latitude) || 
+            isNaN(ville.longitude) ||
+            !ville.note ||
+            !ville.pseudo_ami
+          ) {
+            console.error('Données invalides pour ville ami, affichage ignoré:', {
+              id: ville.id,
+              nom: ville.nom_ville,
+              coords: [ville.latitude, ville.longitude],
+              note: ville.note,
+              pseudo: ville.pseudo_ami
+            })
             return null
           }
           
