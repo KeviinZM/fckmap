@@ -12,6 +12,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Fckmap',
   description: 'Carte interactive pour marquer les villes où vous avez eu des relations sexuelles',
+  keywords: 'carte, géolocalisation, voyage, interactive',
 }
 
 export default function RootLayout({
