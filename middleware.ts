@@ -8,11 +8,14 @@ export function middleware(request: NextRequest) {
   // Continuer avec la requête
   const response = NextResponse.next()
 
-  // Log simple pour le monitoring (on utilisera les métriques dans l'API route)
+  // Log simple pour le monitoring (les métriques Prometheus sont dans /api/metrics)
   const duration = (Date.now() - start) / 1000
   
   // Log pour debug (sera collecté par Prometheus via l'endpoint /api/metrics)
   console.log(`[FCK] ${method} ${route} ${response.status} - ${duration}s`)
+
+  // Note: Les métriques Prometheus sont gérées directement dans /api/metrics
+  // pour éviter les problèmes d'Edge Runtime
 
   return response
 }
