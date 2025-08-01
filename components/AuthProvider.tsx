@@ -144,6 +144,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('❌ Erreur Supabase signOut:', error)
+        
+        // Si la session est manquante, c'est que l'utilisateur est déjà déconnecté
+        if (error.message?.includes('Auth session missing') || error.message?.includes('session')) {
+          console.log('⚠️ Session déjà expirée - forçage de la déconnexion locale')
+          // Forcer la mise à jour de l'état en supprimant l'utilisateur local
+          setUser(null)
+          setLoading(false)
+          console.log('✅ Déconnexion forcée réussie')
+          return // Ne pas throw d'erreur dans ce cas
+        }
+        
         throw error
       }
       
