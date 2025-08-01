@@ -106,7 +106,7 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
             {/* Afficher les frontières si disponibles, sinon un cercle */}
             {ville.frontieres && ville.frontieres.length > 0 ? (
               <Polygon
-                positions={ville.frontieres}
+                positions={ville.frontieres as any}
                 pathOptions={{
                   color: '#FF6B35',
                   fillColor: '#FF6B35',
@@ -173,7 +173,7 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
             {/* Afficher les frontières si disponibles, sinon un cercle (couleur bleue pour les amis) */}
             {ville.frontieres && ville.frontieres.length > 0 ? (
               <Polygon
-                positions={ville.frontieres}
+                positions={ville.frontieres as any}
                 pathOptions={{
                   color: '#3B82F6', // Bleu pour les amis
                   fillColor: '#3B82F6',

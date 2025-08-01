@@ -1,9 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import LoginForm from '@/components/LoginForm'
-import Map from '@/components/Map'
+// import Map from '@/components/Map'
+const Map = dynamic(() => import('@/components/Map'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg flex items-center justify-center"><p>Chargement de la carte...</p></div>
+})
 import SearchBar from '@/components/SearchBar'
 import StatsPanel from '@/components/StatsPanel'
 import VilleRatingModal from '@/components/VilleRatingModal'

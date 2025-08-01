@@ -184,9 +184,6 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
       })
       
       console.log('Nombre de résultats après déduplication:', uniqueResults.length)
-      uniqueResults.forEach((result, index) => {
-        console.log(`Résultat ${index + 1}:`, result.display_name)
-      })
       
       setResults(uniqueResults)
     } catch (error) {
