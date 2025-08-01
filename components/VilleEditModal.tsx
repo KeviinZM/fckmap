@@ -49,7 +49,7 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
         .from('marques_villes')
         .update({ note: rating })
         .eq('id', ville.id)
-        .eq('id_utilisateur', user.id) // Sécurité
+        .eq('auth_user_id', user.id) // Sécurité
 
       if (error) {
         console.error('Erreur lors de la mise à jour:', error)
@@ -84,7 +84,7 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
         .from('marques_villes')
         .delete()
         .eq('id', ville.id)
-        .eq('id_utilisateur', user.id) // Sécurité
+        .eq('auth_user_id', user.id) // Sécurité
 
       if (error) {
         console.error('Erreur lors de la suppression:', error)
