@@ -138,8 +138,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    try {
+      console.log('🚪 Début de la déconnexion...')
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        console.error('❌ Erreur Supabase signOut:', error)
+        throw error
+      }
+      
+      console.log('✅ Déconnexion réussie')
+      
+    } catch (err: any) {
+      console.error('❌ Erreur complète signOut:', err)
+      throw err
+    }
   }
 
   const updatePseudo = async (newPseudo: string) => {

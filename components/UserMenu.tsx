@@ -28,10 +28,13 @@ export default function UserMenu() {
 
   const handleSignOut = async () => {
     try {
+      console.log('🔄 UserMenu: Tentative de déconnexion...')
       await signOut()
       setIsOpen(false)
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error)
+      console.log('✅ UserMenu: Déconnexion terminée')
+    } catch (error: any) {
+      console.error('❌ UserMenu: Erreur lors de la déconnexion:', error)
+      alert(`Erreur de déconnexion: ${error.message || 'Erreur inconnue'}`)
     }
   }
 
