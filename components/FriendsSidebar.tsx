@@ -99,7 +99,7 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
             .eq('auth_user_id', friendId)
 
           const nbVilles = friendCities?.length || 0
-          const noteMoyenne = nbVilles > 0 
+          const noteMoyenne = nbVilles > 0 && friendCities
             ? friendCities.reduce((sum, city) => sum + city.note, 0) / nbVilles 
             : 0
 
