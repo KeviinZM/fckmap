@@ -59,4 +59,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.custom-marker-composite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible !important;
+}
+
+.custom-marker-composite > div {
+  position: relative;
 } 
