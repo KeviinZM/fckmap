@@ -5,9 +5,9 @@ import { FileText, Shield, Gavel, Mail } from 'lucide-react'
 
 export default function LegalBar() {
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-20 bg-white bg-opacity-95 backdrop-blur-sm border-t border-gray-200 shadow-lg">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-white bg-opacity-95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg">
       <div className="px-4 py-2">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs whitespace-nowrap">
           <Link 
             href="/mentions-legales"
             className="flex items-center space-x-1 text-gray-600 hover:text-orange-500 transition-colors"
