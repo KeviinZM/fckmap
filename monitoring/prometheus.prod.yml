@@ -12,13 +12,14 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # Configuration pour surveiller l'application FCK (dev)
+  # Configuration pour surveiller l'application FCK (production)
   - job_name: 'fck-app'
     static_configs:
-      - targets: ['host.docker.internal:3000']
+      - targets: ['fckmap.fr:443']
     metrics_path: '/api/metrics'
     scrape_interval: 10s
     scrape_timeout: 5s
+    scheme: https
 
   # Configuration pour surveiller Node Exporter (métriques système)
   - job_name: 'node-exporter'
