@@ -26,6 +26,13 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
     setLoading(true)
     setMessage('')
 
+    if (!currentPassword.trim()) {
+      setMessage('Veuillez saisir votre mot de passe actuel')
+      setMessageType('error')
+      setLoading(false)
+      return
+    }
+
     if (newPassword !== confirmPassword) {
       setMessage('Les mots de passe ne correspondent pas')
       setMessageType('error')
@@ -40,7 +47,29 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
       return
     }
 
+    if (currentPassword === newPassword) {
+      setMessage('Le nouveau mot de passe doit être différent de l\'ancien')
+      setMessageType('error')
+      setLoading(false)
+      return
+    }
+
     try {
+      // Vérifier d'abord l'ancien mot de passe en tentant une connexion
+      if (user?.email) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword
+        })
+
+        if (signInError) {
+          setMessage('Mot de passe actuel incorrect')
+          setMessageType('error')
+          setLoading(false)
+          return
+        }
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       })
@@ -109,6 +138,20 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Modifier le mot de passe</h3>
           <form onSubmit={handlePasswordChange} className="space-y-4">
+            <div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Mot de passe actuel"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+
             <div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />

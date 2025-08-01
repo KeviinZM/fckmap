@@ -26,6 +26,8 @@ function MapController({ onVilleSelect }: { onVilleSelect: (ville: { nom: string
   const map = useMap()
 
   useEffect(() => {
+    let isActive = true
+    
     // Gestionnaire de clic sur la carte
     const handleMapClick = async (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng
@@ -35,6 +37,9 @@ function MapController({ onVilleSelect }: { onVilleSelect: (ville: { nom: string
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`
         )
+        
+        if (!isActive) return // Éviter les race conditions
+        
         const data = await response.json()
         
         if (data.address && data.address.city) {
@@ -51,13 +56,16 @@ function MapController({ onVilleSelect }: { onVilleSelect: (ville: { nom: string
           })
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du nom de ville:', error)
+        if (isActive) {
+          console.error('Erreur lors de la récupération du nom de ville:', error)
+        }
       }
     }
 
     map.on('click', handleMapClick)
 
     return () => {
+      isActive = false
       map.off('click', handleMapClick)
     }
   }, [map, onVilleSelect])

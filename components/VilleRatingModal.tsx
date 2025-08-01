@@ -42,19 +42,37 @@ export default function VilleRatingModal({ ville, isOpen, onClose, onVilleMarque
       let frontieres = null
       
       try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 secondes de timeout
+        
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ville.nom)}&format=json&polygon_geojson=1&limit=1&countrycodes=fr`
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ville.nom)}&format=json&polygon_geojson=1&limit=1&countrycodes=fr`,
+          { signal: controller.signal }
         )
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`)
+        }
+        
         const data = await response.json()
         
         if (data.length > 0 && data[0].geojson && data[0].geojson.coordinates) {
           // Convertir les coordonnées pour Leaflet (lat, lng)
           const coordinates = data[0].geojson.coordinates[0]
-          frontieres = coordinates.map((coord: number[]) => [coord[1], coord[0]])
-          console.log('Frontières récupérées:', frontieres?.length, 'points')
+          if (Array.isArray(coordinates) && coordinates.length > 0) {
+            frontieres = coordinates.map((coord: number[]) => [coord[1], coord[0]])
+            console.log('Frontières récupérées:', frontieres?.length, 'points')
+          }
         }
-      } catch (frontieresError) {
-        console.error('Erreur lors de la récupération des frontières:', frontieresError)
+      } catch (frontieresError: any) {
+        if (frontieresError.name === 'AbortError') {
+          console.warn('Timeout lors de la récupération des frontières')
+        } else {
+          console.error('Erreur lors de la récupération des frontières:', frontieresError.message)
+        }
+        // Continuer sans les frontières plutôt que de faire échouer l'opération
       }
 
       // Maintenant, insérer la ville marquée avec ses frontières

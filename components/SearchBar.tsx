@@ -14,6 +14,77 @@ interface SearchBarProps {
   onVilleSelect: (ville: { nom: string; lat: number; lng: number }) => void
 }
 
+interface LocationInfo {
+  department: string
+  country: string
+}
+
+// Fonction utilitaire pour analyser les informations géographiques
+const parseLocationInfo = (parts: string[]): LocationInfo => {
+  let department = ''
+  let country = ''
+  
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i].trim()
+    
+    // Détection des pays
+    const countryMap: Record<string, string> = {
+      'France': 'france',
+      'France métropolitaine': 'france',
+      'Belgique': 'belgique',
+      'Belgium': 'belgique',
+      'Suisse': 'suisse',
+      'Switzerland': 'suisse',
+      'Luxembourg': 'luxembourg',
+      'Monaco': 'monaco',
+      'United States': 'usa',
+      'États-Unis': 'usa',
+      'USA': 'usa',
+      'Canada': 'canada',
+      'Espagne': 'espagne',
+      'Spain': 'espagne',
+      'Italie': 'italie',
+      'Italy': 'italie',
+      'Allemagne': 'allemagne',
+      'Germany': 'allemagne',
+      'Royaume-Uni': 'uk',
+      'United Kingdom': 'uk'
+    }
+    
+    if (countryMap[part]) {
+      country = countryMap[part]
+    }
+    // Numéro de département français
+    else if (part.match(/^\d{2,3}$/)) {
+      department = part.toLowerCase()
+    }
+    // Noms de département ou région française
+    else if (
+      part.includes('-de-') || part.includes('de ') || 
+      part.includes('-et-') || part.includes('-sur-') || part.includes('-les-') ||
+      part.includes('Haute') || part.includes('Bas') || part.includes('Nord') || 
+      part.includes('Sud') || part.includes('Est') || part.includes('Ouest') ||
+      part.includes('Loire') || part.includes('Rhin') || part.includes('Savoie') ||
+      part.includes('Pyrénées') || part.includes('Alpes') || part.includes('Corse') ||
+      part.includes('Île-de-France') || part.includes('Provence') || part.includes('Rhône') ||
+      part.includes('Aquitaine') || part.includes('Bretagne') || part.includes('Normandie')
+    ) {
+      if (!department) department = part.toLowerCase()
+    }
+  }
+  
+  // Si on n'a pas trouvé de pays explicitement, le dernier élément pourrait être le pays
+  if (!country && parts.length > 1) {
+    const lastPart = parts[parts.length - 1].trim().toLowerCase()
+    const cityName = parts[0].toLowerCase()
+    if (lastPart && lastPart !== cityName) {
+      country = lastPart
+    }
+  }
+  
+  return { department, country }
+}
+
 export default function SearchBar({ onVilleSelect }: SearchBarProps) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
@@ -58,62 +129,7 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
       const uniqueResults = data.filter((item: SearchResult, index: number, self: SearchResult[]) => {
         const parts = item.display_name.split(', ')
         const cityName = parts[0].toLowerCase()
-        
-        // Extraire le département et le pays (même logique que formatLocation)
-        let department = ''
-        let country = ''
-        
-        for (let i = 1; i < parts.length; i++) {
-          const part = parts[i].trim()
-          
-          // Si c'est un pays
-          if (part === 'France' || part === 'France métropolitaine') {
-            country = 'france'
-          } else if (part === 'Belgique' || part === 'Belgium') {
-            country = 'belgique'
-          } else if (part === 'Suisse' || part === 'Switzerland') {
-            country = 'suisse'
-          } else if (part === 'Luxembourg') {
-            country = 'luxembourg'
-          } else if (part === 'Monaco') {
-            country = 'monaco'
-          } else if (part === 'United States' || part === 'États-Unis' || part === 'USA') {
-            country = 'usa'
-          } else if (part === 'Canada') {
-            country = 'canada'
-          } else if (part === 'Espagne' || part === 'Spain') {
-            country = 'espagne'
-          } else if (part === 'Italie' || part === 'Italy') {
-            country = 'italie'
-          } else if (part === 'Allemagne' || part === 'Germany') {
-            country = 'allemagne'
-          } else if (part === 'Royaume-Uni' || part === 'United Kingdom') {
-            country = 'uk'
-          }
-          // Si c'est un numéro de département (ex: "75", "92")
-          else if (part.match(/^\d{2,3}$/)) {
-            department = part.toLowerCase()
-          }
-          // Si c'est un nom de département ou région
-          else if (part.includes('-de-') || part.includes('de ') || 
-              part.includes('-et-') || part.includes('-sur-') || part.includes('-les-') ||
-              part.includes('Haute') || part.includes('Bas') || part.includes('Nord') || 
-              part.includes('Sud') || part.includes('Est') || part.includes('Ouest') ||
-              part.includes('Loire') || part.includes('Rhin') || part.includes('Savoie') ||
-              part.includes('Pyrénées') || part.includes('Alpes') || part.includes('Corse') ||
-              part.includes('Île-de-France') || part.includes('Provence') || part.includes('Rhône') ||
-              part.includes('Aquitaine') || part.includes('Bretagne') || part.includes('Normandie')) {
-            if (!department) department = part.toLowerCase()
-          }
-        }
-        
-        // Si on n'a pas trouvé de pays explicitement, le dernier élément pourrait être le pays
-        if (!country && parts.length > 1) {
-          const lastPart = parts[parts.length - 1].trim().toLowerCase()
-          if (lastPart && lastPart !== cityName) {
-            country = lastPart
-          }
-        }
+        const { department, country } = parseLocationInfo(parts)
         
         // Créer une clé unique combinant ville + département + pays
         const uniqueKey = `${cityName}|${department}|${country}`
@@ -122,63 +138,9 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
         return self.findIndex((result: SearchResult) => {
           const resultParts = result.display_name.split(', ')
           const resultCityName = resultParts[0].toLowerCase()
+          const resultLocationInfo = parseLocationInfo(resultParts)
           
-          let resultDepartment = ''
-          let resultCountry = ''
-          
-          for (let i = 1; i < resultParts.length; i++) {
-            const part = resultParts[i].trim()
-            
-            // Si c'est un pays
-            if (part === 'France' || part === 'France métropolitaine') {
-              resultCountry = 'france'
-            } else if (part === 'Belgique' || part === 'Belgium') {
-              resultCountry = 'belgique'
-            } else if (part === 'Suisse' || part === 'Switzerland') {
-              resultCountry = 'suisse'
-            } else if (part === 'Luxembourg') {
-              resultCountry = 'luxembourg'
-            } else if (part === 'Monaco') {
-              resultCountry = 'monaco'
-            } else if (part === 'United States' || part === 'États-Unis' || part === 'USA') {
-              resultCountry = 'usa'
-            } else if (part === 'Canada') {
-              resultCountry = 'canada'
-            } else if (part === 'Espagne' || part === 'Spain') {
-              resultCountry = 'espagne'
-            } else if (part === 'Italie' || part === 'Italy') {
-              resultCountry = 'italie'
-            } else if (part === 'Allemagne' || part === 'Germany') {
-              resultCountry = 'allemagne'
-            } else if (part === 'Royaume-Uni' || part === 'United Kingdom') {
-              resultCountry = 'uk'
-            }
-            // Si c'est un numéro de département (ex: "75", "92")
-            else if (part.match(/^\d{2,3}$/)) {
-              resultDepartment = part.toLowerCase()
-            }
-            // Si c'est un nom de département ou région
-            else if (part.includes('-de-') || part.includes('de ') || 
-                part.includes('-et-') || part.includes('-sur-') || part.includes('-les-') ||
-                part.includes('Haute') || part.includes('Bas') || part.includes('Nord') || 
-                part.includes('Sud') || part.includes('Est') || part.includes('Ouest') ||
-                part.includes('Loire') || part.includes('Rhin') || part.includes('Savoie') ||
-                part.includes('Pyrénées') || part.includes('Alpes') || part.includes('Corse') ||
-                part.includes('Île-de-France') || part.includes('Provence') || part.includes('Rhône') ||
-                part.includes('Aquitaine') || part.includes('Bretagne') || part.includes('Normandie')) {
-              if (!resultDepartment) resultDepartment = part.toLowerCase()
-            }
-          }
-          
-          // Si on n'a pas trouvé de pays explicitement, le dernier élément pourrait être le pays
-          if (!resultCountry && resultParts.length > 1) {
-            const lastPart = resultParts[resultParts.length - 1].trim().toLowerCase()
-            if (lastPart && lastPart !== resultCityName) {
-              resultCountry = lastPart
-            }
-          }
-          
-          const resultUniqueKey = `${resultCityName}|${resultDepartment}|${resultCountry}`
+          const resultUniqueKey = `${resultCityName}|${resultLocationInfo.department}|${resultLocationInfo.country}`
           return resultUniqueKey === uniqueKey
         }) === index
       })
@@ -230,107 +192,68 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
     const parts = displayName.split(', ')
     console.log('Formatage de:', displayName, 'Parties:', parts)
     
-    // Chercher le département, le pays et autres infos
-    let departmentNumber = ''
-    let departmentName = ''
-    let country = ''
-    let region = ''
-    let state = ''
+    const { department, country } = parseLocationInfo(parts)
     
-    for (let i = 1; i < parts.length; i++) {
-      const part = parts[i].trim()
-      console.log(`Analyse partie ${i}: "${part}"`)
-      
-      // Si c'est un pays (priorité à l'identification des pays)
-      if (part === 'France' || part === 'France métropolitaine') {
-        country = 'France'
-        console.log('Pays trouvé:', country)
-      } else if (part === 'Belgique' || part === 'Belgium') {
-        country = 'Belgique'
-      } else if (part === 'Suisse' || part === 'Switzerland') {
-        country = 'Suisse'
-      } else if (part === 'Luxembourg') {
-        country = 'Luxembourg'
-      } else if (part === 'Monaco') {
-        country = 'Monaco'
-      } else if (part === 'United States' || part === 'États-Unis' || part === 'USA') {
-        country = 'États-Unis'
-      } else if (part === 'Canada') {
-        country = 'Canada'
-      } else if (part === 'Espagne' || part === 'Spain') {
-        country = 'Espagne'
-      } else if (part === 'Italie' || part === 'Italy') {
-        country = 'Italie'
-      } else if (part === 'Allemagne' || part === 'Germany') {
-        country = 'Allemagne'
-      } else if (part === 'Royaume-Uni' || part === 'United Kingdom') {
-        country = 'Royaume-Uni'
-      }
-      // Si c'est un numéro de département français (ex: "75", "92")
-      else if (part.match(/^\d{2,3}$/)) {
-        departmentNumber = part
-        console.log('Département numérique trouvé:', departmentNumber)
-      }
-      // Si c'est un nom de département ou région française
-      else if (part.includes('-de-') || part.includes('de ') || 
-               part.includes('-et-') || part.includes('-sur-') || part.includes('-les-') ||
-               part.includes('Haute') || part.includes('Bas') || part.includes('Nord') || 
-               part.includes('Sud') || part.includes('Est') || part.includes('Ouest') ||
-               part.includes('Loire') || part.includes('Rhin') || part.includes('Savoie') ||
-               part.includes('Pyrénées') || part.includes('Alpes') || part.includes('Corse') ||
-               part.includes('Île-de-France') || part.includes('Provence') || part.includes('Rhône') ||
-               part.includes('Aquitaine') || part.includes('Bretagne') || part.includes('Normandie')) {
-        if (!departmentName) departmentName = part
-        console.log('Département/région trouvé:', part)
-      }
-      // Si c'est un état (pour les pays comme USA, Canada)
-      else if (!country && (part.includes('Texas') || part.includes('California') || part.includes('New York') || 
-               part.includes('Ontario') || part.includes('Quebec') || part.length <= 3)) {
-        state = part
-        console.log('État trouvé:', state)
-      }
-      // Sinon, c'est peut-être une région
-      else if (!departmentName && !state && i < parts.length - 1) {
-        region = part
-        console.log('Région trouvée:', region)
-      }
+    // Mapping des codes pays vers noms lisibles
+    const countryDisplayNames: Record<string, string> = {
+      'france': 'France',
+      'belgique': 'Belgique',
+      'suisse': 'Suisse',
+      'luxembourg': 'Luxembourg',
+      'monaco': 'Monaco',
+      'usa': 'États-Unis',
+      'canada': 'Canada',
+      'espagne': 'Espagne',
+      'italie': 'Italie',
+      'allemagne': 'Allemagne',
+      'uk': 'Royaume-Uni'
     }
     
-    // Si on n'a pas trouvé de pays explicitement, le dernier élément pourrait être le pays
-    if (!country && parts.length > 1) {
-      const lastPart = parts[parts.length - 1].trim()
-      if (lastPart && lastPart !== parts[0]) {
-        country = lastPart
-        console.log('Pays déduit du dernier élément:', country)
-      }
-    }
-    
-    // Construire l'affichage selon le pays
     const locationParts = []
     
-    if (country === 'France') {
-      // Pour la France : afficher numéro de département + nom (si disponible) + pays
+    // Analyser les départements et régions pour la France
+    if (country === 'france') {
+      let departmentNumber = ''
+      let departmentName = ''
+      
+      for (let i = 1; i < parts.length; i++) {
+        const part = parts[i].trim()
+        if (part.match(/^\d{2,3}$/)) {
+          departmentNumber = part
+        } else if (
+          part.includes('-de-') || part.includes('de ') || 
+          part.includes('-et-') || part.includes('-sur-') || part.includes('-les-') ||
+          part.includes('Haute') || part.includes('Bas') || part.includes('Nord') || 
+          part.includes('Sud') || part.includes('Est') || part.includes('Ouest') ||
+          part.includes('Loire') || part.includes('Rhin') || part.includes('Savoie') ||
+          part.includes('Pyrénées') || part.includes('Alpes') || part.includes('Corse') ||
+          part.includes('Île-de-France') || part.includes('Provence') || part.includes('Rhône') ||
+          part.includes('Aquitaine') || part.includes('Bretagne') || part.includes('Normandie')
+        ) {
+          if (!departmentName) departmentName = part
+        }
+      }
+      
       if (departmentNumber && departmentName) {
         locationParts.push(`${departmentName} (${departmentNumber})`)
       } else if (departmentNumber) {
         locationParts.push(`Département ${departmentNumber}`)
       } else if (departmentName) {
         locationParts.push(departmentName)
-      } else if (region) {
-        locationParts.push(region)
+      } else if (department) {
+        locationParts.push(department)
       }
+      
       locationParts.push('France')
     } else {
-      // Pour les autres pays : région/état + pays
-      if (state) {
-        locationParts.push(state)
-      } else if (region) {
-        locationParts.push(region)
-      } else if (departmentName) {
-        locationParts.push(departmentName)
+      // Pour les autres pays
+      if (department) {
+        locationParts.push(department)
       }
-      if (country) {
-        locationParts.push(country)
+      
+      const displayCountry = countryDisplayNames[country] || country || parts[parts.length - 1]
+      if (displayCountry) {
+        locationParts.push(displayCountry)
       }
     }
     

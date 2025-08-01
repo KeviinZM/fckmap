@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -51,7 +52,7 @@ export interface UserMetadata {
   code_ami: string
 }
 
-export const getUserMetadata = (user: any): UserMetadata | null => {
+export const getUserMetadata = (user: SupabaseUser | null): UserMetadata | null => {
   if (!user?.user_metadata) return null
   return {
     pseudo: user.user_metadata.pseudo || '',
