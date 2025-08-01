@@ -6,7 +6,7 @@ import { AuthProvider } from '@/components/AuthProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'FCK - Marquez vos villes',
+  title: 'Fckmap',
   description: 'Carte interactive pour marquer les villes où vous avez eu des relations sexuelles',
 }
 
