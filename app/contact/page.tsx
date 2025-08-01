@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, MessageSquare, User, Send, CheckCircle } from 'lucide-react'
+import { Mail, MessageSquare, User, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import emailjs from '@emailjs/browser'
+import { EMAILJS_CONFIG, isEmailJSConfigured } from '@/lib/emailjs-config'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -12,17 +14,45 @@ export default function Contact() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError('')
     
-    // Simulation d'envoi (à remplacer par votre API)
-    setTimeout(() => {
+    // Vérifier la configuration EmailJS
+    if (!isEmailJSConfigured()) {
+      setError('Service de contact temporairement indisponible. Utilisez l\'email direct.')
       setIsSubmitting(false)
+      return
+    }
+    
+    try {
+      // Envoi via EmailJS
+      const result = await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: 'contact@fckmap.fr' // Optionnel, selon ton template
+        },
+        EMAILJS_CONFIG.PUBLIC_KEY
+      )
+      
+      console.log('Email envoyé avec succès:', result)
       setIsSubmitted(true)
       setFormData({ name: '', email: '', subject: '', message: '' })
-    }, 1000)
+      
+    } catch (err) {
+      console.error('Erreur envoi email:', err)
+      setError('Erreur lors de l\'envoi. Veuillez réessayer ou nous contacter directement.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -44,7 +74,7 @@ export default function Contact() {
             </p>
             <button
               onClick={() => setIsSubmitted(false)}
-              className="bg-fck-orange text-white px-6 py-2 rounded-lg hover:bg-fck-orange-dark transition-colors"
+              className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-500-dark transition-colors"
             >
               Envoyer un autre message
             </button>
@@ -93,7 +123,7 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       placeholder="Votre nom"
                     />
                   </div>
@@ -112,7 +142,7 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       placeholder="votre@email.com"
                     />
                   </div>
@@ -128,7 +158,7 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   >
                     <option value="">Sélectionnez un sujet</option>
                     <option value="question-generale">Question générale</option>
@@ -155,7 +185,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent resize-none"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                       placeholder="Décrivez votre demande en détail..."
                     />
                   </div>
@@ -164,7 +194,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-fck-orange text-white py-2 px-4 rounded-lg hover:bg-fck-orange-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-500-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isSubmitting ? (
                     <>
@@ -178,6 +208,14 @@ export default function Contact() {
                     </>
                   )}
                 </button>
+
+                {/* Message d'erreur */}
+                {error && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
+                    <AlertCircle className="w-4 h-4 text-red-500 mr-2 flex-shrink-0" />
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                )}
               </form>
             </div>
 
@@ -187,7 +225,7 @@ export default function Contact() {
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-3">
-                  <Mail className="w-5 h-5 text-fck-orange mt-1" />
+                  <Mail className="w-5 h-5 text-orange-500 mt-1" />
                   <div>
                     <h3 className="font-medium text-gray-800">Email direct</h3>
                     <p className="text-gray-600">contact@fckmap.fr</p>
