@@ -18,6 +18,7 @@ import { MapPin } from 'lucide-react'
 import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
+import LegalBar from '@/components/LegalBar'
 
 export default function Home() {
   const { user, loading } = useAuth()
@@ -361,6 +362,9 @@ export default function Home() {
           <LoginForm onSuccess={handleLoginSuccess} />
         </div>
       </div>
+
+      {/* Barre légale en bas */}
+      <LegalBar />
     </div>
   )
 } 
