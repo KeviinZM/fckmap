@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .fck-button {
+    @apply bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .fck-input {
+    @apply border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent;
+  }
+  
+  .fck-panel {
+    @apply bg-white rounded-lg shadow-lg p-4 border border-gray-200;
+  }
+}
+
+/* Leaflet custom styles */
+.leaflet-container {
+  width: 100% !important;
+  height: 100vh !important;
+  z-index: 1;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+  font-family: system-ui, sans-serif;
+}
+
+/* Fix pour l'affichage de la carte */
+.leaflet-div-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Styles pour les marqueurs personnalisés */
+.custom-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-marker-friend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
