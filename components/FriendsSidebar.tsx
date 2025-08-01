@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Users, UserPlus, Copy, Check, UserMinus, ChevronDown, ChevronUp, MapPin } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { supabase } from '@/lib/supabase'
+import { getColorForFriend } from '@/lib/friend-colors'
 
 interface Friend {
   id: string
@@ -12,6 +13,8 @@ interface Friend {
   friend_id: string // ID de la relation d'amitié
   nb_villes: number
   note_moyenne: number
+  color: string // Couleur hexadécimale de l'ami
+  color_name: string // Nom de la couleur pour l'affichage
 }
 
 interface FriendsSidebarProps {
@@ -103,13 +106,18 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
             ? friendCities.reduce((sum, city) => sum + city.note, 0) / nbVilles 
             : 0
 
+          // Attribution automatique de couleur basée sur l'ID de l'ami
+          const friendColor = getColorForFriend(friendInfo.id)
+
           friendsData.push({
             id: friendInfo.id,
             pseudo: friendInfo.pseudo || 'Utilisateur',
             code_ami: friendInfo.code_ami || '',
             friend_id: friendship.id,
             nb_villes: nbVilles,
-            note_moyenne: noteMoyenne
+            note_moyenne: noteMoyenne,
+            color: friendColor.value,
+            color_name: friendColor.name
           })
         }
       }
@@ -347,6 +355,13 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
               <div className="space-y-1">
                 {friends.map((friend) => (
                   <div key={friend.id} className="flex items-center justify-between p-1 bg-gray-50 rounded text-xs">
+                    {/* Indicateur de couleur */}
+                    <div 
+                      className="w-3 h-3 rounded-full border border-gray-300 flex-shrink-0 mr-2"
+                      style={{ backgroundColor: friend.color }}
+                      title={`Couleur: ${friend.color_name}`}
+                    />
+                    
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <div className="font-medium text-xs text-gray-900 truncate">{friend.pseudo}</div>
@@ -361,7 +376,10 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
                           </div>
                         </div>
                       </div>
-                      <div className="text-xs text-gray-500">{friend.code_ami}</div>
+                      <div className="text-xs text-gray-500 flex items-center">
+                        <span>{friend.code_ami}</span>
+                        <span className="ml-2 text-gray-400">• {friend.color_name}</span>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-1 ml-2">
 

@@ -15,6 +15,7 @@ import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
 import { MapPin } from 'lucide-react'
+import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
 
@@ -124,7 +125,7 @@ export default function Home() {
               isNaN(city.latitude) || 
               isNaN(city.longitude) ||
               !city.note ||
-              !friendInfo.pseudo && !friendInfo.email
+              (!friendInfo.pseudo && !friendInfo.email)
             ) {
               console.warn('Ville d\'ami invalide ignorée:', {
                 cityId: city.id,
@@ -135,6 +136,9 @@ export default function Home() {
               continue // Ignorer cette ville si les données sont incomplètes
             }
 
+            // Attribution automatique de couleur basée sur l'ID de l'ami
+            const friendColor = getColorForFriend(friendId)
+
             villesAmisFormatted.push({
               id: city.id,
               nom_ville: city.nom_ville,
@@ -144,6 +148,9 @@ export default function Home() {
               frontieres: city.frontieres,
               pseudo_ami: friendInfo.pseudo || friendInfo.email?.split('@')[0] || 'Ami',
               code_ami: friendInfo.code_ami || '',
+              friend_id: friendId,
+              color: friendColor.value,
+              color_name: friendColor.name,
               created_at: city.created_at
             })
           }

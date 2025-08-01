@@ -175,27 +175,30 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
             isNaN(ville.latitude) || 
             isNaN(ville.longitude) ||
             !ville.note ||
-            !ville.pseudo_ami
+            !ville.pseudo_ami ||
+            !ville.color ||
+            !ville.friend_id
           ) {
             console.error('Données invalides pour ville ami, affichage ignoré:', {
               id: ville.id,
               nom: ville.nom_ville,
               coords: [ville.latitude, ville.longitude],
               note: ville.note,
-              pseudo: ville.pseudo_ami
+              pseudo: ville.pseudo_ami,
+              color: ville.color
             })
             return null
           }
           
           return (
           <div key={`ami-${ville.id}`}>
-            {/* Afficher les frontières si disponibles, sinon un cercle (couleur bleue pour les amis) */}
+            {/* Afficher les frontières si disponibles, sinon un cercle (couleur personnalisée de l'ami) */}
             {ville.frontieres && ville.frontieres.length > 0 ? (
               <Polygon
                 positions={ville.frontieres as any}
                 pathOptions={{
-                  color: '#3B82F6', // Bleu pour les amis
-                  fillColor: '#3B82F6',
+                  color: ville.color, // Couleur personnalisée de l'ami
+                  fillColor: ville.color,
                   fillOpacity: 0.15,
                   weight: 2
                 }}
@@ -205,8 +208,8 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
                 center={[ville.latitude, ville.longitude]}
                 radius={5000} // 5km de rayon par défaut
                 pathOptions={{
-                  color: '#3B82F6', // Bleu pour les amis
-                  fillColor: '#3B82F6',
+                  color: ville.color, // Couleur personnalisée de l'ami
+                  fillColor: ville.color,
                   fillOpacity: 0.15,
                   weight: 2
                 }}
@@ -217,7 +220,7 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
               position={[ville.latitude, ville.longitude]}
               icon={L.divIcon({
                 className: 'custom-marker-friend',
-                html: `<div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold border-2 border-white shadow-lg">${ville.note}</div>`,
+                html: `<div class="text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold border-2 border-white shadow-lg" style="background-color: ${ville.color}">${ville.note}</div>`,
                 iconSize: [32, 32],
                 iconAnchor: [16, 16],
               })}
@@ -225,8 +228,8 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
               <Popup>
                 <div className="p-2">
                   <h3 className="font-semibold text-gray-900">{ville.nom_ville}</h3>
-                  <div className="text-xs text-blue-600 font-medium mb-1">
-                    Ami: {ville.pseudo_ami}
+                  <div className="text-xs font-medium mb-1" style={{ color: ville.color }}>
+                    Ami: {ville.pseudo_ami} ({ville.color_name})
                   </div>
                   <div className="flex items-center mt-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-current" />

@@ -43,6 +43,9 @@ export interface VilleAmi {
   frontieres?: number[][]
   pseudo_ami: string
   code_ami: string
+  friend_id: string // ID de l'ami pour déterminer sa couleur
+  color: string // Couleur hexadécimale de l'ami
+  color_name: string // Nom de la couleur pour l'affichage
   created_at: string
 }
 
