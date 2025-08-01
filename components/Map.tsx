@@ -143,11 +143,7 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
                     <Star className="w-4 h-4 text-yellow-500 fill-current" />
                     <span className="ml-1 text-sm text-gray-600">Note: {ville.note}/5</span>
                   </div>
-                  {ville.frontieres && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      Frontières: {ville.frontieres.length} points
-                    </div>
-                  )}
+
                   <button
                     onClick={() => onVilleDelete(ville.id)}
                     className="mt-2 w-full bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded transition-colors"
@@ -213,11 +209,7 @@ export default function Map({ onVilleSelect, villesMarquees, villesAmis, onVille
                     <Star className="w-4 h-4 text-yellow-500 fill-current" />
                     <span className="ml-1 text-sm text-gray-600">Note: {ville.note}/5</span>
                   </div>
-                  {ville.frontieres && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      Frontières: {ville.frontieres.length} points
-                    </div>
-                  )}
+
                   <div className="text-xs text-gray-400 mt-1">
                     Code ami: {ville.code_ami}
                   </div>
