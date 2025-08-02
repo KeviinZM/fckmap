@@ -516,7 +516,10 @@ export default function Home() {
       {/* Carte */}
       <div 
         className="absolute inset-0 z-10"
-        onClick={() => setIsMobileMenuOpen(false)}
+        onClick={() => {
+          setIsMobileMenuOpen(false)
+          setIsFriendsMenuOpen(false)
+        }}
       >
         <Map 
           onVilleSelect={handleVilleSelect}
