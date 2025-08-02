@@ -270,8 +270,44 @@ export default function Home() {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-40 p-4">
-        <div className="flex items-center justify-between">
+      <div className="absolute top-0 left-0 right-0 z-40 p-3 sm:p-4">
+        {/* Mobile Header */}
+        <div className="sm:hidden">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
+              textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
+            }}>
+              FCK
+            </h1>
+            <div className="flex items-center space-x-2">
+              {user && (
+                <button
+                  onClick={diagnosticVillesAmis}
+                  className="bg-blue-500 text-white p-2 rounded-lg text-xs hover:bg-blue-600 transition-colors shadow-lg"
+                  title="Debug"
+                >
+                  🔍
+                </button>
+              )}
+              {user ? (
+                <UserMenu />
+              ) : (
+                <button
+                  onClick={() => document.getElementById('login-modal')?.classList.remove('hidden')}
+                  className="bg-white text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors border-2 border-white hover:bg-gray-100 font-semibold shadow-lg"
+                >
+                  Connexion
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="w-full">
+            <SearchBar onVilleSelect={handleVilleSelect} />
+          </div>
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden sm:flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-white drop-shadow-lg" style={{ 
@@ -280,7 +316,7 @@ export default function Home() {
                 FCK
               </h1>
             </div>
-            <div className="w-80">
+            <div className="w-80 lg:w-96">
               <SearchBar onVilleSelect={handleVilleSelect} />
             </div>
           </div>
@@ -311,7 +347,7 @@ export default function Home() {
 
       {/* Panneau Mes Amis - positionné sous le menu utilisateur */}
       {user && (
-        <div className="absolute top-20 right-4 z-30">
+        <div className="absolute top-24 sm:top-20 right-4 z-30">
           <FriendsSidebar onFriendsChange={fetchVillesAmis} />
         </div>
       )}
