@@ -271,7 +271,7 @@ export default function Home() {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-40 pt-16 pb-3 px-3 sm:p-4" style={{ paddingTop: 'max(48px, env(safe-area-inset-top))' }}>
+      <div className="absolute top-0 left-0 right-0 z-40 pt-6 pb-3 px-3 sm:p-4" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
         {/* Mobile Header */}
         <div className="sm:hidden">
           <div className="flex items-center justify-between space-x-2">
@@ -349,7 +349,7 @@ export default function Home() {
       </div>
 
       {/* Menu Mobile - Bouton bas gauche */}
-      <div className="sm:hidden absolute bottom-24 left-4 z-30">
+      <div className="sm:hidden absolute bottom-16 left-4 z-30">
         {/* Menu déployé */}
         {isMobileMenuOpen && (
           <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 overflow-y-auto">
