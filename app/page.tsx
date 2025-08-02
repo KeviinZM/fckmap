@@ -14,7 +14,7 @@ import StatsPanel from '@/components/StatsPanel'
 import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
-import { MapPin, Menu, X } from 'lucide-react'
+import { MapPin, Menu, X, BarChart3 } from 'lucide-react'
 import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
@@ -275,20 +275,11 @@ export default function Home() {
         {/* Mobile Header */}
         <div className="sm:hidden">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-opacity-30 transition-all shadow-lg"
-                title="Menu"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-              <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
-                textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
-              }}>
-                FCK
-              </h1>
-            </div>
+            <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
+              textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
+            }}>
+              FCK
+            </h1>
             <div className="flex items-center space-x-2">
               {user && (
                 <button
@@ -355,68 +346,81 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Menu Mobile */}
-      {isMobileMenuOpen && (
-        <div className="sm:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)}>
-          <div 
-            className="absolute top-0 left-0 w-80 h-full bg-white shadow-2xl transform transition-transform duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+      {/* Menu Mobile - Bouton bas gauche */}
+      <div className="sm:hidden absolute bottom-4 left-4 z-30">
+        {/* Menu déployé */}
+        {isMobileMenuOpen && (
+          <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center">
+                  <BarChart3 className="w-5 h-5 text-fck-orange mr-2" />
+                  Statistiques
+                </h2>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-gray-500 hover:text-gray-700 p-1"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </div>
-            
-            <div className="p-4 space-y-6 overflow-y-auto h-full pb-20">
-              {/* Panneau Statistiques Mobile */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <MapPin className="w-4 h-4 mr-2 text-fck-orange" />
-                  Statistiques
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-fck-orange">{villesMarquees.length}</div>
-                      <div className="text-xs text-gray-600">Villes marquées</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-500">
-                        {villesMarquees.length > 0 
-                          ? (villesMarquees.reduce((sum, ville) => sum + ville.note, 0) / villesMarquees.length).toFixed(1)
-                          : '0'
-                        }
-                      </div>
-                      <div className="text-xs text-gray-600">Note moyenne</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
               
-              {/* Panneau Amis Mobile */}
-              {user && (
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                    👥 Mes Amis
-                  </h3>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 text-center">
-                      Fonctionnalité disponible sur desktop
-                    </p>
+              {/* Statistiques principales */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-fck-orange">{villesMarquees.length}</div>
+                    <div className="text-xs text-gray-600">Villes marquées</div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-yellow-500">
+                      {villesMarquees.length > 0 
+                        ? (villesMarquees.reduce((sum, ville) => sum + ville.note, 0) / villesMarquees.length).toFixed(1)
+                        : '0'
+                      }
+                    </div>
+                    <div className="text-xs text-gray-600">Note moyenne</div>
                   </div>
                 </div>
-              )}
+                
+                {/* Répartition des notes */}
+                {villesMarquees.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Répartition des notes</h3>
+                    <div className="space-y-1">
+                      {[5, 4, 3, 2, 1].map(note => {
+                        const count = villesMarquees.filter(ville => ville.note === note).length;
+                        return (
+                          <div key={note} className="flex items-center text-sm">
+                            <span className="w-8 text-gray-600">⭐ {note}</span>
+                            <div className="flex-1 mx-2">
+                              <div className="bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-fck-orange h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${villesMarquees.length > 0 ? (count / villesMarquees.length) * 100 : 0}%` }}
+                                />
+                              </div>
+                            </div>
+                            <span className="w-8 text-right text-gray-600">{count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Bouton flottant */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="bg-white rounded-lg shadow-lg p-4 border border-gray-200 hover:shadow-xl transition-all duration-200"
+        >
+          <BarChart3 className="w-6 h-6 text-fck-orange" />
+        </button>
+      </div>
 
       {/* Panneau Mes Amis - Desktop seulement */}
       {user && (
