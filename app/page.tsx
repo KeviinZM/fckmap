@@ -464,15 +464,15 @@ export default function Home() {
       />
 
       {/* Modal de connexion */}
-      <div id="login-modal" className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Connexion</h2>
+      <div id="login-modal" className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Connexion</h2>
             <button
               onClick={() => document.getElementById('login-modal')?.classList.add('hidden')}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 p-2 sm:p-1"
             >
-              ✕
+              <X className="w-6 h-6" />
             </button>
           </div>
           <LoginForm onSuccess={handleLoginSuccess} />

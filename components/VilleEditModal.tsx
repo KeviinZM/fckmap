@@ -111,40 +111,40 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center">
-            <MapPin className="w-6 h-6 text-fck-orange mr-2" />
-            <h2 className="text-xl font-bold text-gray-900">Modifier la ville</h2>
+            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-fck-orange mr-2" />
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Modifier la ville</h2>
           </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-2 sm:p-1"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{ville.nom_ville}</h3>
-          <p className="text-gray-600 text-sm">
+        <div className="mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{ville.nom_ville}</h3>
+          <p className="text-gray-600 text-sm sm:text-base">
             Modifiez la note de votre expérience dans cette ville
           </p>
         </div>
 
         {/* Système de notation */}
-        <div className="mb-6">
-          <div className="flex justify-center space-x-2">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex justify-center space-x-1 sm:space-x-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoveredRating(star)}
                 onMouseLeave={() => setHoveredRating(0)}
-                className="transition-transform hover:scale-110"
+                className="transition-transform hover:scale-110 p-2 sm:p-1"
               >
                 <Star
-                  className={`w-8 h-8 ${
+                  className={`w-10 h-10 sm:w-8 sm:h-8 ${
                     star <= (hoveredRating || rating)
                       ? 'text-yellow-500 fill-current'
                       : 'text-gray-300'
@@ -153,8 +153,8 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
               </button>
             ))}
           </div>
-          <div className="text-center mt-2">
-            <span className="text-sm text-gray-600">
+          <div className="text-center mt-3 sm:mt-2">
+            <span className="text-sm sm:text-base text-gray-600">
               {rating > 0 ? `${rating}/5 étoiles` : 'Sélectionnez une note'}
             </span>
           </div>
@@ -166,10 +166,10 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
           </div>
         )}
 
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
           <button
             onClick={handleClose}
-            className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full sm:flex-1 py-4 sm:py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-base sm:text-sm font-medium"
           >
             Annuler
           </button>
@@ -177,19 +177,22 @@ export default function VilleEditModal({ ville, isOpen, onClose, onVilleUpdated,
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="py-3 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto py-4 sm:py-3 px-6 sm:px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm font-medium flex items-center justify-center"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
             ) : (
-              <Trash2 className="w-5 h-5" />
+              <>
+                <Trash2 className="w-5 h-5 mr-2 sm:mr-0" />
+                <span className="sm:hidden">Supprimer</span>
+              </>
             )}
           </button>
           
           <button
             onClick={handleUpdate}
             disabled={rating === 0 || loading}
-            className="flex-1 bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:flex-1 bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-4 sm:py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
