@@ -426,7 +426,7 @@ export default function Home() {
 
       {/* Panneau Mes Amis - Desktop seulement */}
       {user && (
-        <div className="hidden sm:block absolute top-24 sm:top-20 right-4 z-30">
+        <div className="hidden sm:block absolute top-20 right-4 z-30">
           <FriendsSidebar onFriendsChange={fetchVillesAmis} />
         </div>
       )}
