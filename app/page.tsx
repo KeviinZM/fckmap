@@ -15,7 +15,7 @@ import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
 import { MapPin, Menu, X, BarChart3, Users, Copy, Check, UserPlus } from 'lucide-react'
-import { getColorForFriend } from '@/lib/friend-colors'
+import { getUniqueColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
 import LegalBar from '@/components/LegalBar'
@@ -102,6 +102,8 @@ export default function Home() {
 
       // 2. Pour chaque ami, récupérer ses informations ET ses villes
       const villesAmisFormatted: VilleAmi[] = []
+      const usedColors: string[] = [] // Tracker les couleurs déjà utilisées
+      const friendColors: Record<string, { value: string; name: string }> = {} // Cache des couleurs par ami
 
       for (const friendship of friendships) {
         // Déterminer l'ID de l'ami (pas le mien)
@@ -117,6 +119,13 @@ export default function Home() {
 
         if (!friendInfo) {
           continue
+        }
+
+        // Attribuer une couleur unique pour cet ami (une seule fois)
+        if (!friendColors[friendId]) {
+          const friendColor = getUniqueColorForFriend(friendId, usedColors)
+          friendColors[friendId] = { value: friendColor.value, name: friendColor.name }
+          usedColors.push(friendColor.value)
         }
 
         // 4. Récupérer les villes de cet ami
@@ -153,8 +162,8 @@ export default function Home() {
               continue // Ignorer cette ville si les données sont incomplètes
             }
 
-            // Attribution automatique de couleur basée sur l'ID de l'ami
-            const friendColor = getColorForFriend(friendId)
+            // Récupérer la couleur déjà attribuée à cet ami
+            const friendColor = friendColors[friendId]!
 
             villesAmisFormatted.push({
               id: city.id,

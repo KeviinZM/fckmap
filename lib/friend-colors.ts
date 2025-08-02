@@ -50,3 +50,30 @@ export function getColorByIndex(index: number): FriendColor {
 export function getAllColors(): FriendColor[] {
   return FRIEND_COLORS
 }
+
+/**
+ * Attribue une couleur unique à un ami en évitant les doublons
+ * @param friendId ID de l'ami
+ * @param usedColors Couleurs déjà utilisées par d'autres amis
+ * @returns Une couleur unique pour cet ami
+ */
+export function getUniqueColorForFriend(friendId: string, usedColors: string[] = []): FriendColor {
+  // D'abord, essayer d'utiliser la couleur basée sur le hash (pour la cohérence)
+  const preferredColor = getColorForFriend(friendId)
+  
+  // Si la couleur préférée n'est pas utilisée, la retourner
+  if (!usedColors.includes(preferredColor.value)) {
+    return preferredColor
+  }
+  
+  // Sinon, chercher la première couleur disponible
+  for (const color of FRIEND_COLORS) {
+    if (!usedColors.includes(color.value)) {
+      return color
+    }
+  }
+  
+  // Si toutes les couleurs sont utilisées (plus de 10 amis), 
+  // revenir à la couleur basée sur le hash (il faudra des doublons)
+  return preferredColor
+}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Users, UserPlus, Copy, Check, UserMinus, ChevronDown, ChevronUp, MapPin, X } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { supabase } from '@/lib/supabase'
-import { getColorForFriend } from '@/lib/friend-colors'
+import { getUniqueColorForFriend } from '@/lib/friend-colors'
 
 interface Friend {
   id: string
@@ -81,6 +81,7 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
 
       // Pour chaque relation d'amitié, récupérer les infos de l'ami
       const friendsData: Friend[] = []
+      const usedColors: string[] = [] // Tracker les couleurs déjà utilisées
       
       for (const friendship of friendships || []) {
         const friendId = friendship.auth_user_id_1 === user.id 
@@ -106,8 +107,9 @@ export default function FriendsSidebar({ onFriendsChange }: FriendsSidebarProps)
             ? friendCities.reduce((sum, city) => sum + city.note, 0) / nbVilles 
             : 0
 
-          // Attribution automatique de couleur basée sur l'ID de l'ami
-          const friendColor = getColorForFriend(friendInfo.id)
+          // Attribution automatique de couleur unique basée sur l'ID de l'ami
+          const friendColor = getUniqueColorForFriend(friendInfo.id, usedColors)
+          usedColors.push(friendColor.value) // Marquer cette couleur comme utilisée
 
           friendsData.push({
             id: friendInfo.id,
