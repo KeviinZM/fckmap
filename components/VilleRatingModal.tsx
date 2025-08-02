@@ -117,12 +117,12 @@ export default function VilleRatingModal({ ville, isOpen, onClose, onVilleMarque
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-3 sm:p-6 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-3 sm:mb-6">
           <div className="flex items-center">
             <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-fck-orange mr-2" />
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Marquer cette ville</h2>
+            <h2 className="text-base sm:text-xl font-bold text-gray-900">Marquer cette ville</h2>
           </div>
           <button
             onClick={handleClose}
@@ -169,10 +169,10 @@ export default function VilleRatingModal({ ville, isOpen, onClose, onVilleMarque
 
         {/* Messages selon la note */}
         {rating > 0 && (
-          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+          <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center">
-              <Heart className="w-5 h-5 text-fck-orange mr-2" />
-              <span className="text-sm sm:text-base text-gray-700">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-fck-orange mr-2" />
+              <span className="text-xs sm:text-base text-gray-700">
                 {rating === 1 && "Pas terrible..."}
                 {rating === 2 && "Bof, pas mémorable"}
                 {rating === 3 && "Correct, rien de spécial"}
