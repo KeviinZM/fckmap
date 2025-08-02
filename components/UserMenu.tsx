@@ -14,15 +14,17 @@ export default function UserMenu() {
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
     }
   }, [])
 
@@ -44,14 +46,14 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors duration-200 shadow-lg"
+        className="flex items-center space-x-1 sm:space-x-2 bg-white border border-gray-300 rounded-lg px-2 sm:px-4 py-2 hover:bg-gray-50 transition-colors duration-200 shadow-lg"
       >
-        <span className="font-medium text-gray-900">{pseudo}</span>
-        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="font-medium text-gray-900 text-sm sm:text-base truncate max-w-[80px] sm:max-w-none">{pseudo}</span>
+        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
           <div className="py-1">
 
             <button
@@ -59,17 +61,17 @@ export default function UserMenu() {
                 setIsOpen(false)
                 setIsAccountPanelOpen(true)
               }}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
+              className="w-full px-3 sm:px-4 py-3 sm:py-2 text-left text-gray-700 hover:bg-gray-100 active:bg-gray-200 flex items-center transition-colors"
             >
-              <User className="w-4 h-4 mr-3" />
-              Mon compte
+              <User className="w-4 h-4 mr-2 sm:mr-3 flex-shrink-0" />
+              <span className="text-sm sm:text-base">Mon compte</span>
             </button>
             <button
               onClick={handleSignOut}
-              className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center"
+              className="w-full px-3 sm:px-4 py-3 sm:py-2 text-left text-red-600 hover:bg-red-50 active:bg-red-100 flex items-center transition-colors"
             >
-              <LogOut className="w-4 h-4 mr-3" />
-              Déconnexion
+              <LogOut className="w-4 h-4 mr-2 sm:mr-3 flex-shrink-0" />
+              <span className="text-sm sm:text-base">Déconnexion</span>
             </button>
           </div>
         </div>
