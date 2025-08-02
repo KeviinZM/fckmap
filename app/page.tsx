@@ -271,7 +271,7 @@ export default function Home() {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-40 pt-12 pb-3 px-3 sm:p-4">
+      <div className="absolute top-0 left-0 right-0 z-40 pt-16 pb-3 px-3 sm:p-4" style={{ paddingTop: 'max(48px, env(safe-area-inset-top))' }}>
         {/* Mobile Header */}
         <div className="sm:hidden">
           <div className="flex items-center justify-between space-x-2">
