@@ -362,6 +362,74 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Menu déroulant des amis mobile */}
+      {isFriendsMenuOpen && user && (
+        <div className="sm:hidden absolute top-20 left-3 right-3 z-30 bg-white rounded-lg shadow-xl border border-gray-200 max-h-60 overflow-y-auto">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-bold text-gray-900 flex items-center">
+                <Users className="w-4 h-4 text-fck-orange mr-2" />
+                Mes amis
+              </h3>
+              <button
+                onClick={() => setIsFriendsMenuOpen(false)}
+                className="text-gray-500 hover:text-gray-700 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            {/* Liste des amis */}
+            <div className="space-y-2">
+              {villesAmis.length > 0 ? (
+                (() => {
+                  // Grouper les villes par ami
+                  const villePourAmis = villesAmis.reduce((acc, ville) => {
+                    const amiKey = ville.friend_pseudo || ville.friend_email || 'Ami inconnu'
+                    if (!acc[amiKey]) {
+                      acc[amiKey] = []
+                    }
+                    acc[amiKey].push(ville)
+                    return acc
+                  }, {} as Record<string, typeof villesAmis>)
+
+                  return Object.entries(villePourAmis).map(([amiNom, villesAmi]) => (
+                    <div key={amiNom} className="border-b border-gray-100 pb-2 last:border-b-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div 
+                            className="w-3 h-3 rounded-full mr-2"
+                            style={{ backgroundColor: villesAmi[0]?.friend_color || '#6B7280' }}
+                          ></div>
+                          <span className="font-medium text-sm text-gray-900">{amiNom}</span>
+                        </div>
+                        <span className="text-xs text-gray-500">{villesAmi.length} ville{villesAmi.length > 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="mt-1 ml-5">
+                        {villesAmi.slice(0, 3).map((ville) => (
+                          <div key={ville.id} className="text-xs text-gray-600">
+                            {ville.nom_ville} ({ville.note}/5)
+                          </div>
+                        ))}
+                        {villesAmi.length > 3 && (
+                          <div className="text-xs text-gray-400">
+                            +{villesAmi.length - 3} autres...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                })()
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  Aucun ami n'a encore marqué de villes
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Menu Mobile - Bouton bas gauche */}
       <div className="sm:hidden absolute bottom-4 left-4 z-30">
         {/* Menu déployé */}
