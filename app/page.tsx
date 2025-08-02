@@ -14,7 +14,7 @@ import StatsPanel from '@/components/StatsPanel'
 import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
-import { MapPin, Menu, X, BarChart3, Users } from 'lucide-react'
+import { MapPin, Menu, X, BarChart3, Users, Copy, Check, UserPlus } from 'lucide-react'
 import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
@@ -29,6 +29,12 @@ export default function Home() {
   const [loadingVilles, setLoadingVilles] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isFriendsMenuOpen, setIsFriendsMenuOpen] = useState(false)
+  const [myCode, setMyCode] = useState('')
+  const [friendCode, setFriendCode] = useState('')
+  const [friendsLoading, setFriendsLoading] = useState(false)
+  const [friendsError, setFriendsError] = useState('')
+  const [friendsSuccess, setFriendsSuccess] = useState('')
+  const [copied, setCopied] = useState(false)
 
   // Charger les villes marquées de l'utilisateur et de ses amis
   useEffect(() => {
@@ -41,6 +47,11 @@ export default function Home() {
     // S'assurer que les menus sont fermés quand l'état de connexion change
     setIsMobileMenuOpen(false)
     setIsFriendsMenuOpen(false)
+    // Charger le code ami de l'utilisateur
+    if (user) {
+      const codeAmi = user.user_metadata?.code_ami || ''
+      setMyCode(codeAmi)
+    }
   }, [user])
 
   const fetchVillesMarquees = async () => {
@@ -225,6 +236,86 @@ export default function Home() {
     fetchVillesAmis()
   }
 
+  // Fonctions pour la gestion des amis mobiles
+  const copyMyCode = async () => {
+    if (myCode) {
+      await navigator.clipboard.writeText(myCode)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const addFriendMobile = async () => {
+    if (!user || !friendCode.trim()) {
+      setFriendsError('Veuillez entrer un code ami')
+      return
+    }
+
+    setFriendsLoading(true)
+    setFriendsError('')
+    setFriendsSuccess('')
+
+    try {
+      const { data: friendUserArray, error: searchError } = await supabase
+        .rpc('find_user_by_code_ami', { 
+          code_ami_search: friendCode.trim().toUpperCase() 
+        })
+
+      if (searchError) {
+        setFriendsError('Code ami non trouvé')
+        return
+      }
+
+      const friendUser = friendUserArray && friendUserArray.length > 0 ? friendUserArray[0] : null
+
+      if (!friendUser) {
+        setFriendsError('Code ami non trouvé')
+        return
+      }
+
+      if (friendUser.id === user.id) {
+        setFriendsError('Vous ne pouvez pas vous ajouter vous-même')
+        return
+      }
+
+      // Vérifier que cette amitié n'existe pas déjà
+      const { data: existingFriendship } = await supabase
+        .from('amis')
+        .select('id')
+        .or(`and(auth_user_id_1.eq.${user.id},auth_user_id_2.eq.${friendUser.id}),and(auth_user_id_1.eq.${friendUser.id},auth_user_id_2.eq.${user.id})`)
+        .single()
+
+      if (existingFriendship) {
+        setFriendsError('Cette personne est déjà votre ami(e)')
+        return
+      }
+
+      // Créer la relation d'amitié
+      const { error: insertError } = await supabase
+        .from('amis')
+        .insert({
+          auth_user_id_1: user.id,
+          auth_user_id_2: friendUser.id
+        })
+
+      if (insertError) {
+        setFriendsError('Erreur lors de l\'ajout de l\'ami')
+        return
+      }
+
+      setFriendsSuccess('Ami ajouté avec succès !')
+      setFriendCode('')
+      // Recharger les villes d'amis
+      fetchVillesAmis()
+      
+      setTimeout(() => setFriendsSuccess(''), 3000)
+    } catch (err) {
+      setFriendsError('Erreur lors de l\'ajout de l\'ami')
+    } finally {
+      setFriendsLoading(false)
+    }
+  }
+
   const handleVilleDelete = async (villeId: string) => {
     if (!user) return
 
@@ -307,7 +398,15 @@ export default function Home() {
           {user && (
             <div className="flex justify-center mt-2">
               <button
-                onClick={() => setIsFriendsMenuOpen(!isFriendsMenuOpen)}
+                onClick={() => {
+                  setIsFriendsMenuOpen(!isFriendsMenuOpen)
+                  if (!isFriendsMenuOpen) {
+                    // Reset des états quand on ouvre le menu
+                    setFriendsError('')
+                    setFriendsSuccess('')
+                    setFriendCode('')
+                  }
+                }}
                 className="bg-white bg-opacity-90 text-gray-800 px-3 py-1 rounded-lg text-xs font-semibold shadow-lg border border-gray-200 hover:bg-opacity-100 transition-all duration-200 flex items-center space-x-1"
               >
                 <Users className="w-3 h-3" />
@@ -358,19 +457,82 @@ export default function Home() {
 
       {/* Menu déroulant des amis mobile */}
       {isFriendsMenuOpen && user && (
-        <div className="sm:hidden absolute top-20 left-3 right-3 z-50 bg-white rounded-lg shadow-xl border border-gray-200 max-h-60 overflow-y-auto">
+        <div className="sm:hidden absolute top-20 left-3 right-3 z-50 bg-white rounded-lg shadow-xl border border-gray-200 max-h-96 overflow-y-auto">
           <div className="p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-gray-900 flex items-center">
                 <Users className="w-4 h-4 text-fck-orange mr-2" />
                 Mes amis
               </h3>
               <button
-                onClick={() => setIsFriendsMenuOpen(false)}
+                onClick={() => {
+                  setIsFriendsMenuOpen(false)
+                  // Reset des états quand on ferme le menu
+                  setFriendsError('')
+                  setFriendsSuccess('')
+                  setFriendCode('')
+                }}
                 className="text-gray-500 hover:text-gray-700 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
+            </div>
+
+            {/* Mon code ami */}
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">Mon code ami</h4>
+              <div className="flex items-center justify-between bg-white border rounded-lg p-2">
+                <span className="font-mono text-sm font-bold text-fck-orange">{myCode}</span>
+                <button
+                  onClick={copyMyCode}
+                  className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                  title="Copier"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Partagez ce code avec vos amis</p>
+            </div>
+
+            {/* Ajouter un ami */}
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+              <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                <UserPlus className="w-4 h-4 mr-1" />
+                Ajouter un ami
+              </h4>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={friendCode}
+                  onChange={(e) => setFriendCode(e.target.value.toUpperCase())}
+                  placeholder="Code ami"
+                  className="flex-1 px-2 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                  disabled={friendsLoading}
+                />
+                <button
+                  onClick={addFriendMobile}
+                  disabled={friendsLoading || !friendCode.trim()}
+                  className="px-3 py-2 bg-fck-orange text-white rounded text-sm font-medium hover:bg-fck-orange-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {friendsLoading ? '...' : 'Ajouter'}
+                </button>
+              </div>
+              
+              {/* Messages d'erreur/succès */}
+              {friendsError && (
+                <div className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+                  {friendsError}
+                </div>
+              )}
+              {friendsSuccess && (
+                <div className="mt-2 text-xs text-green-600 bg-green-50 p-2 rounded">
+                  {friendsSuccess}
+                </div>
+              )}
             </div>
             
             {/* Liste des amis */}
@@ -512,7 +674,12 @@ export default function Home() {
         className="absolute inset-0 z-10"
         onClick={() => {
           setIsMobileMenuOpen(false)
-          setIsFriendsMenuOpen(false)
+          if (isFriendsMenuOpen) {
+            setIsFriendsMenuOpen(false)
+            setFriendsError('')
+            setFriendsSuccess('')
+            setFriendCode('')
+          }
         }}
       >
         <Map 
