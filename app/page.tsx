@@ -287,15 +287,6 @@ export default function Home() {
             </div>
             
             <div className="flex items-center space-x-1 flex-shrink-0">
-              {user && (
-                <button
-                  onClick={diagnosticVillesAmis}
-                  className="bg-blue-500 text-white p-2 rounded-lg text-xs hover:bg-blue-600 transition-colors shadow-lg"
-                  title="Debug"
-                >
-                  🔍
-                </button>
-              )}
               {user ? (
                 <UserMenu />
               ) : (
