@@ -271,7 +271,7 @@ export default function Home() {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-40 p-3 sm:p-4">
+      <div className="absolute top-0 left-0 right-0 z-40 pt-8 pb-3 px-3 sm:p-4">
         {/* Mobile Header */}
         <div className="sm:hidden">
           <div className="flex items-center justify-between space-x-2">
@@ -349,7 +349,7 @@ export default function Home() {
       </div>
 
       {/* Menu Mobile - Bouton bas gauche */}
-      <div className="sm:hidden absolute bottom-4 left-4 z-30">
+      <div className="sm:hidden absolute bottom-24 left-4 z-30">
         {/* Menu déployé */}
         {isMobileMenuOpen && (
           <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 overflow-y-auto">
@@ -426,7 +426,7 @@ export default function Home() {
 
       {/* Panneau Mes Amis - Desktop seulement */}
       {user && (
-        <div className="hidden sm:block absolute top-20 right-4 z-30">
+        <div className="hidden sm:block absolute top-24 right-4 z-30">
           <FriendsSidebar onFriendsChange={fetchVillesAmis} />
         </div>
       )}
