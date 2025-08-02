@@ -14,7 +14,7 @@ import StatsPanel from '@/components/StatsPanel'
 import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
-import { MapPin } from 'lucide-react'
+import { MapPin, Menu, X } from 'lucide-react'
 import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
@@ -27,6 +27,7 @@ export default function Home() {
   const [selectedVille, setSelectedVille] = useState<{ nom: string; lat: number; lng: number } | null>(null)
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false)
   const [loadingVilles, setLoadingVilles] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Charger les villes marquées de l'utilisateur et de ses amis
   useEffect(() => {
@@ -274,11 +275,20 @@ export default function Home() {
         {/* Mobile Header */}
         <div className="sm:hidden">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
-              textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
-            }}>
-              FCK
-            </h1>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-opacity-30 transition-all shadow-lg"
+                title="Menu"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+              <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
+                textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
+              }}>
+                FCK
+              </h1>
+            </div>
             <div className="flex items-center space-x-2">
               {user && (
                 <button
@@ -345,9 +355,72 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Panneau Mes Amis - positionné sous le menu utilisateur */}
+      {/* Menu Mobile */}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)}>
+          <div 
+            className="absolute top-0 left-0 w-80 h-full bg-white shadow-2xl transform transition-transform duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-500 hover:text-gray-700 p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-4 space-y-6 overflow-y-auto h-full pb-20">
+              {/* Panneau Statistiques Mobile */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <MapPin className="w-4 h-4 mr-2 text-fck-orange" />
+                  Statistiques
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-fck-orange">{villesMarquees.length}</div>
+                      <div className="text-xs text-gray-600">Villes marquées</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-500">
+                        {villesMarquees.length > 0 
+                          ? (villesMarquees.reduce((sum, ville) => sum + ville.note, 0) / villesMarquees.length).toFixed(1)
+                          : '0'
+                        }
+                      </div>
+                      <div className="text-xs text-gray-600">Note moyenne</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Panneau Amis Mobile */}
+              {user && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                    👥 Mes Amis
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 text-center">
+                      Fonctionnalité disponible sur desktop
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Panneau Mes Amis - Desktop seulement */}
       {user && (
-        <div className="absolute top-24 sm:top-20 right-4 z-30">
+        <div className="hidden sm:block absolute top-24 sm:top-20 right-4 z-30">
           <FriendsSidebar onFriendsChange={fetchVillesAmis} />
         </div>
       )}
@@ -362,8 +435,8 @@ export default function Home() {
         />
       </div>
 
-      {/* Panneau de statistiques */}
-      <div className="absolute bottom-4 left-4 z-30">
+      {/* Panneau de statistiques - Desktop seulement */}
+      <div className="hidden sm:block absolute bottom-4 left-4 z-30">
         <StatsPanel 
           villesMarquees={villesMarquees}
           onRefresh={fetchVillesMarquees}
