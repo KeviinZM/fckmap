@@ -38,6 +38,9 @@ export default function Home() {
       // Lancer le diagnostic pour identifier les problèmes
       diagnosticVillesAmis()
     }
+    // S'assurer que les menus sont fermés quand l'état de connexion change
+    setIsMobileMenuOpen(false)
+    setIsFriendsMenuOpen(false)
   }, [user])
 
   const fetchVillesMarquees = async () => {
@@ -355,7 +358,7 @@ export default function Home() {
 
       {/* Menu déroulant des amis mobile */}
       {isFriendsMenuOpen && user && (
-        <div className="sm:hidden absolute top-20 left-3 right-3 z-30 bg-white rounded-lg shadow-xl border border-gray-200 max-h-60 overflow-y-auto">
+        <div className="sm:hidden absolute top-20 left-3 right-3 z-50 bg-white rounded-lg shadow-xl border border-gray-200 max-h-60 overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-bold text-gray-900 flex items-center">
