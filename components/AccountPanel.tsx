@@ -177,21 +177,21 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Mon compte</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Mon compte</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-2 sm:p-1"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Informations du compte */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations</h3>
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Informations</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -303,8 +303,8 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
 
         {/* Modification du mot de passe */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Modifier le mot de passe</h3>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Modifier le mot de passe</h3>
+          <form onSubmit={handlePasswordChange} className="space-y-3 sm:space-y-4">
             <div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -313,7 +313,7 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Mot de passe actuel"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent text-base sm:text-sm"
                   required
                 />
               </div>
@@ -365,7 +365,7 @@ export default function AccountPanel({ isOpen, onClose }: AccountPanelProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-4 sm:py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-sm"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
