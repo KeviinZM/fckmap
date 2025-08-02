@@ -349,7 +349,7 @@ export default function Home() {
       </div>
 
       {/* Menu Mobile - Bouton bas gauche */}
-      <div className="sm:hidden absolute bottom-16 left-4 z-30">
+      <div className="sm:hidden absolute bottom-8 left-4 z-30">
         {/* Menu déployé */}
         {isMobileMenuOpen && (
           <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 overflow-y-auto">
