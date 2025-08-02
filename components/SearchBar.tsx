@@ -275,13 +275,13 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
   return (
     <div className="relative z-50" ref={searchRef}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-5 sm:h-5 text-gray-400" />
+        <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
-          placeholder="Rechercher une ville..."
-          className="w-full pl-10 pr-12 sm:pr-10 py-3 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent bg-white shadow-lg text-base sm:text-sm"
+          placeholder="Rechercher..."
+          className="w-full pl-8 sm:pl-10 pr-10 sm:pr-10 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent bg-white shadow-lg text-sm sm:text-sm"
           autoComplete="off"
           autoCapitalize="words"
           autoCorrect="off"
@@ -292,10 +292,10 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-2 sm:p-1 -m-1"
+            className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 sm:p-1"
             aria-label="Effacer la recherche"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         )}
       </div>
