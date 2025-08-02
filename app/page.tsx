@@ -379,7 +379,7 @@ export default function Home() {
                 (() => {
                   // Grouper les villes par ami
                   const villePourAmis = villesAmis.reduce((acc, ville) => {
-                    const amiKey = ville.friend_pseudo || ville.friend_email || 'Ami inconnu'
+                    const amiKey = ville.pseudo_ami || 'Ami inconnu'
                     if (!acc[amiKey]) {
                       acc[amiKey] = []
                     }
@@ -393,7 +393,7 @@ export default function Home() {
                         <div className="flex items-center">
                           <div 
                             className="w-3 h-3 rounded-full mr-2"
-                            style={{ backgroundColor: villesAmi[0]?.friend_color || '#6B7280' }}
+                            style={{ backgroundColor: villesAmi[0]?.color || '#6B7280' }}
                           ></div>
                           <span className="font-medium text-sm text-gray-900">{amiNom}</span>
                         </div>
