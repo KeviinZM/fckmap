@@ -186,6 +186,11 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
     onVilleSelect(ville)
     setQuery('')
     setIsOpen(false)
+    
+    // Fermer le clavier virtuel sur mobile
+    if (document.activeElement instanceof HTMLInputElement) {
+      document.activeElement.blur()
+    }
   }
 
   const formatLocation = (displayName: string) => {
@@ -270,18 +275,25 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
   return (
     <div className="relative z-50" ref={searchRef}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 sm:w-5 sm:h-5 text-gray-400" />
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           placeholder="Rechercher une ville..."
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent bg-white shadow-lg"
+          className="w-full pl-10 pr-12 sm:pr-10 py-3 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fck-orange focus:border-transparent bg-white shadow-lg text-base sm:text-sm"
+          autoComplete="off"
+          autoCapitalize="words"
+          autoCorrect="off"
+          spellCheck="false"
+          inputMode="search"
+          enterKeyHint="search"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-2 sm:p-1 -m-1"
+            aria-label="Effacer la recherche"
           >
             <X className="w-5 h-5" />
           </button>
@@ -289,15 +301,15 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
       </div>
 
       {isOpen && (results.length > 0 || loading) && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-y-auto z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-64 sm:max-h-60 overflow-y-auto z-50">
           {loading ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 sm:p-4 text-center text-gray-500">
               <div className="w-5 h-5 border-2 border-fck-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="mt-2">Recherche en cours...</p>
+              <p className="mt-2 text-sm sm:text-base">Recherche en cours...</p>
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              <p>Aucun résultat trouvé</p>
+            <div className="p-4 sm:p-4 text-center text-gray-500">
+              <p className="text-sm sm:text-base">Aucun résultat trouvé</p>
             </div>
           ) : (
             <div>
@@ -305,14 +317,14 @@ export default function SearchBar({ onVilleSelect }: SearchBarProps) {
                 <button
                   key={index}
                   onClick={() => handleVilleSelect(result)}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 flex items-center"
+                  className="w-full px-4 py-4 sm:py-3 text-left hover:bg-gray-50 active:bg-gray-100 border-b border-gray-100 last:border-b-0 flex items-center transition-colors duration-150"
                 >
-                    <MapPin className="w-4 h-4 text-fck-orange mr-3 flex-shrink-0" />
+                    <MapPin className="w-5 h-5 sm:w-4 sm:h-4 text-fck-orange mr-3 sm:mr-3 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 truncate">
+                      <div className="font-medium text-gray-900 truncate text-base sm:text-sm">
                         {result.display_name.split(',')[0]}
                       </div>
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm sm:text-xs text-gray-500 truncate mt-0.5 sm:mt-0">
                         <span className="font-medium text-fck-orange">
                           {formatLocation(result.display_name)}
                         </span>
