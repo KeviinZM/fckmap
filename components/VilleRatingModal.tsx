@@ -132,9 +132,9 @@ export default function VilleRatingModal({ ville, isOpen, onClose, onVilleMarque
           </button>
         </div>
 
-        <div className="mb-4 sm:mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{ville.nom}</h3>
-          <p className="text-gray-600 text-sm sm:text-base">
+        <div className="mb-3 sm:mb-6">
+          <h3 className="text-base sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">{ville.nom}</h3>
+          <p className="text-gray-600 text-xs sm:text-base">
             Donnez une note à votre expérience dans cette ville
           </p>
         </div>
@@ -189,17 +189,17 @@ export default function VilleRatingModal({ ville, isOpen, onClose, onVilleMarque
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           <button
             onClick={handleClose}
-            className="w-full sm:flex-1 py-4 sm:py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-base sm:text-sm font-medium"
+            className="w-full sm:flex-1 py-3 sm:py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-sm font-medium"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={rating === 0 || loading}
-            className="w-full sm:flex-1 bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-4 sm:py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm"
+            className="w-full sm:flex-1 bg-fck-orange hover:bg-fck-orange-dark text-white font-semibold py-3 sm:py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-sm"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
