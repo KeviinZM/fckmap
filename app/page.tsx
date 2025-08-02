@@ -14,7 +14,7 @@ import StatsPanel from '@/components/StatsPanel'
 import VilleRatingModal from '@/components/VilleRatingModal'
 import { supabase } from '@/lib/supabase'
 import { VilleMarquee, VilleAmi } from '@/lib/supabase'
-import { MapPin, Menu, X, BarChart3 } from 'lucide-react'
+import { MapPin, Menu, X, BarChart3, Users } from 'lucide-react'
 import { getColorForFriend } from '@/lib/friend-colors'
 import UserMenu from '@/components/UserMenu'
 import FriendsSidebar from '@/components/FriendsSidebar'
@@ -28,6 +28,7 @@ export default function Home() {
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false)
   const [loadingVilles, setLoadingVilles] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isFriendsMenuOpen, setIsFriendsMenuOpen] = useState(false)
 
   // Charger les villes marquées de l'utilisateur et de ses amis
   useEffect(() => {
@@ -307,6 +308,19 @@ export default function Home() {
               )}
             </div>
           </div>
+          
+          {/* Bouton "Mes amis" mobile - affiché uniquement si connecté */}
+          {user && (
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => setIsFriendsMenuOpen(!isFriendsMenuOpen)}
+                className="bg-white bg-opacity-90 text-gray-800 px-3 py-1 rounded-lg text-xs font-semibold shadow-lg border border-gray-200 hover:bg-opacity-100 transition-all duration-200 flex items-center space-x-1"
+              >
+                <Users className="w-3 h-3" />
+                <span>Mes amis</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Desktop Header */}
