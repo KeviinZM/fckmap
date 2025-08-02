@@ -5,7 +5,7 @@ import { FileText, Shield, Gavel, Mail } from 'lucide-react'
 
 export default function LegalBar() {
   return (
-    <div className="fixed bottom-8 sm:bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-white bg-opacity-95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg">
+    <div className="fixed bottom-4 sm:bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-white bg-opacity-95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg">
       <div className="px-3 sm:px-4 py-2">
         {/* Version mobile - Icônes uniquement */}
         <div className="flex sm:hidden items-center justify-center gap-4">
