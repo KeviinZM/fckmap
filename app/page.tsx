@@ -352,9 +352,9 @@ export default function Home() {
       <div className="sm:hidden absolute bottom-4 left-4 z-30">
         {/* Menu déployé */}
         {isMobileMenuOpen && (
-          <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-80 overflow-y-auto">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
+          <div className="absolute bottom-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 w-72 max-h-48 landscape:max-h-36 landscape:w-64 overflow-y-auto">
+            <div className="p-4 landscape:p-3">
+              <div className="flex items-center justify-between mb-4 landscape:mb-2">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center">
                   <BarChart3 className="w-5 h-5 text-fck-orange mr-2" />
                   Statistiques
@@ -368,14 +368,14 @@ export default function Home() {
               </div>
               
               {/* Statistiques principales */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-fck-orange">{villesMarquees.length}</div>
+              <div className="space-y-4 landscape:space-y-2">
+                <div className="grid grid-cols-2 gap-4 landscape:gap-2">
+                  <div className="text-center p-3 landscape:p-2 bg-gray-50 rounded-lg">
+                    <div className="text-2xl landscape:text-xl font-bold text-fck-orange">{villesMarquees.length}</div>
                     <div className="text-xs text-gray-600">Villes marquées</div>
                   </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-500">
+                  <div className="text-center p-3 landscape:p-2 bg-gray-50 rounded-lg">
+                    <div className="text-2xl landscape:text-xl font-bold text-yellow-500">
                       {villesMarquees.length > 0 
                         ? (villesMarquees.reduce((sum, ville) => sum + ville.note, 0) / villesMarquees.length).toFixed(1)
                         : '0'
