@@ -274,13 +274,18 @@ export default function Home() {
       <div className="absolute top-0 left-0 right-0 z-40 p-3 sm:p-4">
         {/* Mobile Header */}
         <div className="sm:hidden">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-white drop-shadow-lg" style={{ 
+          <div className="flex items-center justify-between space-x-2">
+            <h1 className="text-lg font-bold text-white drop-shadow-lg flex-shrink-0" style={{ 
               textShadow: '2px 2px 0px #FF6B35, -2px -2px 0px #FF6B35, 2px -2px 0px #FF6B35, -2px 2px 0px #FF6B35, 0px 2px 0px #FF6B35, 2px 0px 0px #FF6B35, 0px -2px 0px #FF6B35, -2px 0px 0px #FF6B35' 
             }}>
               FCK
             </h1>
-            <div className="flex items-center space-x-2">
+            
+            <div className="flex-1 px-2 max-w-xs">
+              <SearchBar onVilleSelect={handleVilleSelect} />
+            </div>
+            
+            <div className="flex items-center space-x-1 flex-shrink-0">
               {user && (
                 <button
                   onClick={diagnosticVillesAmis}
@@ -295,15 +300,12 @@ export default function Home() {
               ) : (
                 <button
                   onClick={() => document.getElementById('login-modal')?.classList.remove('hidden')}
-                  className="bg-white text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors border-2 border-white hover:bg-gray-100 font-semibold shadow-lg"
+                  className="bg-white text-gray-800 px-2 py-2 rounded-lg text-xs transition-colors border-2 border-white hover:bg-gray-100 font-semibold shadow-lg"
                 >
                   Connexion
                 </button>
               )}
             </div>
-          </div>
-          <div className="w-full">
-            <SearchBar onVilleSelect={handleVilleSelect} />
           </div>
         </div>
 
